@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Happy Birthday, Vinceloyd!</title>
+  <meta name="description" content="Simple view-only message cards website. Mobile-friendly and QR shareable." />
+  <style>
+    :root{
+      --bg-dark: #5b0000;
+      --bg-light:#8b0000;
+      --card: #ffffff;
+      --accent: #ff9bb3;
+      --muted: #c9b6b6;
+      --text-dark: #222222;
+      --radius:14px;
+      --gap:14px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color-scheme: light;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      background: linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .app{
+      max-width:760px;
+      margin:0 auto;
+      padding:22px 18px;
+      box-sizing:border-box;
+    }
+
+    header{text-align:center;margin-bottom:18px}
+    h1{
+      font-size:22px;
+      margin:0;
+      color:#fff;
+      line-height:1.1;
+      text-shadow:0 1px 0 rgba(0,0,0,0.35);
+    }
+    p.lead{
+      margin:8px 0 0;
+      color:rgba(255,230,236,0.95);
+      font-size:14px;
+    }
+
+    .grid{
+      display:flex;
+      flex-direction:column;
+      gap:var(--gap);
+      margin-top:12px;
+    }
+
+    .card{
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(11,8,8,0.25);
+      cursor:pointer;
+      transition:transform .14s ease, box-shadow .14s ease;
+      border:1px solid rgba(0,0,0,0.06);
+    }
+    .card:active{transform:translateY(2px);}
+    .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(11,8,8,0.28);}
+
+    .card .title{
+      font-weight:700;
+      font-size:18px;
+      margin-bottom:6px;
+      color:var(--text-dark);
+      text-align:center;
+    }
+
+    .card .message{
+      font-size:16px;
+      color:#333;
+      white-space:pre-wrap;
+      display:none;
+      margin-top:10px;
+      text-align:justify;       /* 👈 Justify text */
+      text-justify:inter-word;  /* 👈 Smooth justification */
+      line-height:1.6;          /* 👈 Better readability */
+    }
+
+    .set{
+      text-align:center;
+      margin-top:30px;
+      color:rgba(255,240,240,0.95);
+    }
+    .set p{
+      font-weight:600;
+      color:rgba(255,220,230,0.95);
+      margin-bottom:10px;
+      font-size:15px;
+    }
+
+    /* ✨ Bible section layout (2 cards per row) */
+    .grid.bible-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--gap);
+      margin-top: 12px;
+    }
+
+    footer{
+      margin:40px 0 30px;
+      font-size:13px;
+      color:rgba(255,240,240,0.9);
+      text-align:center;
+      line-height:1.4;
+    }
+
+    @media(min-width:720px){
+      .app{padding:28px;}
+      h1{font-size:26px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header>
+      <h1>Happy Birthday, Vinceloyd!</h1>
+      <p class="lead">Tap a card to open and read 💌</p>
+    </header>
+
+    <main>
+      <section class="grid" id="cardsGrid" aria-live="polite"></section>
+    </main>
+
+    <section class="set" aria-label="Read this when">
+      <p>Read this when:</p>
+      <div class="grid" id="cardsGrid2" aria-live="polite"></div>
+    </section>
+
+    <section class="set" aria-label="I have something to tell you">
+      <p>I have something to tell you — also read this when:</p>
+      <div class="grid" id="cardsGrid3" aria-live="polite"></div>
+    </section>
+
+    <section class="set" aria-label="Bible verses">
+      <p>🌷 Bible Verses for You 🌷</p>
+      <div class="grid bible-grid" id="cardsGrid4" aria-live="polite"></div>
+    </section>
+
+    <footer>
+      I wish you the best! Thank you for always being there for me!<br><br>
+      - Angela
+    </footer>
+  </div>
+
+  <script>
+    const cards = [
+      {title:'Happy', message:`Remember: you are loved and capable of great things.`},
+      {title:'Birthday', message:`Wishing you a bright and playful day! 😊`},
+      {title:'<3<3<3', message:`Whatever happens, you’ve got this! 💪`}
+    ];
+
+    const cards2 = [
+      {title:'You miss me 🤍', message:`Hey, I miss you too. Remember our laughs and happy moments.`},
+      {title:'You feel sad 😢', message:`It’s okay to cry sometimes. You’re not alone.`},
+      {title:'You feel lost 🧭', message:`Even when unsure, you’re still moving forward.`},
+      {title:'You’re proud of yourself 🌟', message:`Celebrate every small win — they matter.`},
+      {title:'You’re stressed 😖', message:`Take a deep breath, step back, and know that everything will be okay.`},
+      {title:'You need motivation 💥', message:`You’re stronger than you think, and I believe in you — always.`}
+    ];
+
+    const cards3 = [
+      {title:'Just because', message:`Hello, I hope this card/message finds you well. First of all, I just want to express my gratitude to you. You've helped me a lot, and I really appreciate all that you've done for me. When I'm having a hard time or even a problem with all the aspects in my life, you've been a part and you're always standing by my side through it all. We've only met last year and you've always been there for me ever since our chemistry began. I can't really express here how grateful I am having you in my life. I've learned a lot, especially with having another one. You've taught me different things, gave me a lot of things, and made me feel in different ways. Even when it's not always "okay" between us, or when it's not always happiness that came in front of us—you didn't get tired of finding a solution, you didn't get tired of me, and you always have time for fixing us even when you're also going through something.
+
+I can feel that you're also going through a lot, and I know that you'll always get back up. I don't know if you know this but I hope that you do—you are tough, kind, loved, cared for, and unique in your own way. You are a bright person, and I hope you don't lose that spark within you. Your smile is even contagious so just keep on smiling. Always hold onto that hope you have, and always remember that we're here rooting and caring for you.
+
+I really am grateful to have someone like you—you have the purest heart and you can tolerate me and my behavior, so thank you. Thank you for all the meals you've paid, for all the gifts you've given, and for just being there for me. I'm sorry if I can be really tough sometimes, it's just how I am—avoidant, numb, and even mean. I'm really sorry if I weren't always there for you when you needed me. I, too, try to be someone you can lean on, but I am sorry. Nevertheless, thank you talaga sa lahat-lahat!`},
+      {title:'You think I seem strange', message:`I'll be honest and frank with all the things you'll see here. I know that I really seem off and strange lately, and I don't have an excuse for that. Actually, I also don't know. But here's what I know—I'm sorry to tell you this, but tinatamad na talaga ako. Tinatamad akong mag-send ng chat, mag-update, manood ng reels/videos, or kahit mag-open lang ng chat, tinatamad talaga ako. Kaya hindi na rin ako masyadong nakikipag-usap, wala na talaga akong gana. Matagal akong nag-ti-tiyaga kasi kaya ko pa naman kahit ayoko talaga. Pero parang medyo nauudyok na ‘ko at nasasagad ko na sarili ko. Kailangan ko lang talaga na mag-cool off muna. And what I mean by cool off, cool off sa atin. Hindi ko alam kung bakit at anong nangyari, pero gano'n talaga eh. Kahit pilitin ko pa sarili ko, kailangan ko talaga munang tumigil. Pasensya talaga, lalo na’t ngayon lang ako nag-open tungkol sa ganito. Hindi pa kasi ako sigurado, pero matagal-tagal ko na ring pinag-iisipan kung ititigil ko na bang makipag-usap sa ‘yo at ipagpatuloy ito, kasi wala na talaga akong ano, ewan ko, basta. Sinasabi ko lang para ma-heads up ka kahit papaano. Pero hindi ko pa naman gagawin kasi sayang talaga—sayang lahat ng pinagsamahan at nabuo natin. Kaya dumidistansiya na muna ako para ayusin ‘yung sarili ko. 
+
+Honestly, sobrang goal-driven ko kasi talaga, alam kong alam mo rin ‘yon. Kaya madalas na ayaw ko talagang may kausap. Parang mas marami kasi akong nagagawa at oras para sa sarili ko. Hindi naman sa pang-aano pero parang hindi mo lang ako naiintindihan, may message pati huli kong long message sa ‘yo, nando’n talaga ‘yung heads-up tungkol dito. 
+
+May mga oras lang din na may ginagawa ako at wala akong oras para mag-open ng phone, o sadyang naka-charge lang phone ko at nagpapahinga ako. At sa mga panahon na ‘yon, medyo naiirita lang talaga ako at sakal na sakal na, kasi kailangan ko pang mag-update. Kaya nga ulit-ulit ko ring sinabi na hindi pa ako handa, kasi hindi pa naman talaga. Sana maintindihan mo lang ako at ‘wag kang mag-expect sa akin lalo na at hindi pa tayo. Maraming beses mo na rin pati ako na-offend, sa totoo lang, lahat ng ‘yon tandang tanda ko. I also hate the fact na you need to call or missed call my sister just to know my whereabouts when I clearly said that I'm with my roommates—even though you're worried it still feels  like you don't trust me. Additionally, please just be yourself, especially when texting. I want you to just be yourself, you can fully express yourself in either Filipino or English, but just wisely. Also, sometimes I find you annoying, hence I purposely reply late or just view your message. Kaya rin madalas kitang na-ba-block, especially at night, kasi hindi ako makatulog at kapag na-block kita tsaka ako nakakatulog, probably kasi vibrate nang vibrate phone ko.
+
+I'm sure that it's only not because of my phases—but it's really because of me. Well, I'm not sure why, but my hormones do affect them. It's like a roller coaster of emotions—sometimes I am really annoyed and don't care whether you texted, but at night, that's where all hits me. I've realized it all and reflected on what I've done, but I still do it. Also, when it hits me, I just missed you and want you to be here beside me. So, I'm really-really sorry if I can be like this sometimes. I just really don't know what to do, I'm really tired with all that's been going on at once, so sometimes sa‘yo ko nabubuhos lahat.
+
+I hope you'll still be here beside me even after reading all of this. I am truly sorry for everything, if I've been putting you down and if I'm really hard to handle. I just really-really don’t know anymore. Hindi ko na maintindihan sarili ko, pero ikaw bahala kung ma-stick ka pa. Tulad nga ng sinabi ko last time, bahala ka na at gawin mo kung anong gusto mo, pababayaan lang kita. Napapansin ko na ring napapagod ka eh, sorry talaga. Tanggap ko naman kahit ano, basta may proper explanation. Basta hindi ko kayang sabihin lahat dito, naiiyak na rin ako, naninikip dibdib ko, ayoko na. Ano pa, and sa‘kin lang, wala akong iba ha pero tamad na tamad na talaga ako, sobra. Tamad na nga, maghahanap pa ng iba, ano ‘yun. 
+
+Na-gi-guilty ako sa mga na'ndito kaya hindi ako nakakapag-open sa mga ganito. Sa personal ko sana sasabihin kaso wala ka rin namang masasabi kaya rito na lang. Basta thank you sa lahat at pasensya talaga. Thank you  rin for having the time to read all of this, thank you.`}  
+    ];
+
+    const cards4 = [
+      {title:'Philippians 4:13', message:`“I can do all things through Christ who strengthens me.” 💪`},
+      {title:'Jeremiah 29:11', message:`“For I know the plans I have for you,” declares the Lord, “plans to prosper you and not to harm you.” 🌸`},
+      {title:'Psalm 46:1', message:`“God is our refuge and strength, an ever-present help in trouble.” 🙏`},
+      {title:'Proverbs 3:5-6', message:`“Trust in the Lord with all your heart and lean not on your own understanding.” 💖`},
+      {title:'Isaiah 41:10', message:`“Do not fear, for I am with you; do not be dismayed, for I am your God.” 🌿`},
+      {title:'Romans 8:28', message:`“And we know that in all things God works for the good of those who love Him.” 🌞`},
+      {title:'Psalm 37:4', message:`“Delight yourself in the Lord, and He will give you the desires of your heart.” 💐`},
+      {title:'1 Corinthians 16:14', message:`“Do everything in love.” ❤️`},
+      {title:'Matthew 19:26', message:`“With God all things are possible.” ✨`},
+      {title:'Psalm 23:1', message:`“The Lord is my shepherd; I lack nothing.” 🕊️`},
+      {title:'John 14:27', message:`“Peace I leave with you; my peace I give you.” ☁️`},
+      {title:'2 Corinthians 5:7', message:`“For we live by faith, not by sight.” 🌼`},
+      {title:'Psalm 121:8', message:`“The Lord will watch over your coming and going both now and forevermore.” 🌙`},
+      {title:'Romans 15:13', message:`“May the God of hope fill you with all joy and peace as you trust in Him.” 🌻`},
+      {title:'Joshua 1:9', message:`“Be strong and courageous. Do not be afraid; for the Lord your God will be with you wherever you go.” 💫`},
+      {title:'Psalm 28:7', message:`“The Lord is my strength and my shield; my heart trusts in Him, and He helps me.” 💗`}
+    ];
+
+    function render(list, containerId){
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      list.forEach(card => {
+        const el = document.createElement('article');
+        el.className = 'card';
+        el.innerHTML = `
+          <div class="title">${card.title}</div>
+          <div class="message">${card.message.replace(/\n/g,'<br>')}</div>
+        `;
+        el.addEventListener('click', () => toggleCard(el));
+        container.appendChild(el);
+      });
+    }
+
+    function toggleCard(cardEl){
+      const msg = cardEl.querySelector('.message');
+      const isVisible = msg.style.display === 'block';
+      msg.style.display = isVisible ? 'none' : 'block';
+      if(!isVisible) cardEl.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+
+    render(cards, 'cardsGrid');
+    render(cards2, 'cardsGrid2');
+    render(cards3, 'cardsGrid3');
+    render(cards4, 'cardsGrid4');
+  </script>
+</body>
+</html>
